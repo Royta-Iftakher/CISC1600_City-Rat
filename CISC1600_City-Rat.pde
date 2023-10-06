@@ -3,6 +3,7 @@
 // CISC 1600
 
 int state = 0;
+float building_x = 0;
 
 void setup() {
     size(800, 500);
@@ -42,9 +43,17 @@ void draw() {
     textSize(20);
     fill(#FFFFFF);
     text("START", 395, 420);
+
+    // Change screen state if Start is clicked
+    if (mousePressed == true) {
+        if (mouseX >= 335 && mouseX <= 455 && mouseY >= 390 && mouseY <= 440) {
+            state = 1;
+        }
+    }
  }
 
  void drawCity(){
+    background(#131862);
     building_x = building_x + 1;
     if (building_x > 240){
       building_x = 0;
