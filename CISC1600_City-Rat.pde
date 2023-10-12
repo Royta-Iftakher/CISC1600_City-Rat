@@ -61,18 +61,19 @@ void draw() {
     stroke(#131862); // A color for the lines: medium navy
     strokeWeight(2); // The thickness of the lines
     fill(#546bab); // the color for the rectangles: light navy
-    rect(-240+building_x,350,80,-250);
-    rect(-160+building_x,350,80,-175);
-    rect(-80+building_x,350,80,-100);
-    rect(0+building_x,350,80,-250);
-    rect(80+building_x,350,80,-175);
-    rect(160+building_x,350,80,-100);
-    rect(240+building_x,350,80,-250);
-    rect(320+building_x,350,80,-175);
-    rect(400+building_x,350,80,-100);
-    rect(480+building_x,350,80,-250);
-    rect(560+building_x,350,80,-175);
-    rect(640+building_x,350,80,-100);
-    rect(720+building_x,350,80,-250);
+    rect(0-building_x,350,80,-250);
+    rect(80-building_x,350,80,-175);
+    rect(160-building_x,350,80,-100);
+    rect(240-building_x,350,80,-250);
+    rect(320-building_x,350,80,-175);
+    rect(400-building_x,350,80,-100);
+    rect(480-building_x,350,80,-250);
+    rect(560-building_x,350,80,-175);
+    rect(640-building_x,350,80,-100);
+    rect(720-building_x,350,80,-250);
+    rect(800-building_x,350,80,-175);
+    rect(880-building_x,350,80,-100);
+    rect(960-building_x,350,80,-250);
 }
 
+// new 
