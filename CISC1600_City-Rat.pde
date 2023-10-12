@@ -4,6 +4,7 @@
 
 int state = 0;
 float building_x = 0;
+float hole_x = 0;
 
 void setup() {
     size(800, 500);
@@ -16,6 +17,7 @@ void draw() {
         startScreen();
     } else if (state == 1) {
         drawCity();
+        //drawHole();
         //drawRat();
     } else if (state == 2) { // Game over screen if rat dies
         //gameOver();
@@ -74,6 +76,21 @@ void draw() {
     rect(800-building_x,350,80,-175);
     rect(880-building_x,350,80,-100);
     rect(960-building_x,350,80,-250);
+    stroke(#131862);
+    fill(#000000);
+    rect(200,350,80,-250);
 }
 
-// new 
+void drawHole(){
+    hole_x = hole_x + 1;
+    if (hole_x > 800){
+      hole_x = 0;
+    }
+    stroke(#FFFFFF);
+    fill(#FFFFFF);
+    ellipse(600-hole_x,400,160,80);
+    ellipse(1400-hole_x,400,160,80);
+    ellipse(2200-hole_x,400,160,80);
+    ellipse(3000-hole_x,400,160,80);
+}
+
