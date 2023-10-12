@@ -93,3 +93,4 @@ void drawHole(){
     ellipse(2200-hole_x,400,160,80);
     ellipse(3000-hole_x,400,160,80);
 }
+
