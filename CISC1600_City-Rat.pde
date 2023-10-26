@@ -26,23 +26,24 @@ void draw() {
     if (state == 0) {
         startScreen();
     } else if (state == 1) {
-        //drawGround();
         drawCity();
         rat.draw();
-        // rat is stationary, city in background will be moving. if space is pressed, rat will jump
-        if (keyPressed == true) {
-            if (key == ' ') {
-                rat.setYchange(-2);
-                rat.setYchange(2);
-            }
-        }
+        rat.run();
         hole.draw();
         hole.getX();
-        //drawRat();
     } else if (state == 2) { // Game over screen if rat dies
         //gameOver();
     } else if (state == 3) { // Win screen if rat reaches the cheese
         //winScreen();
+    }
+}
+
+// Rat is stationary, city background will be moving. If space is pressed, rat will jump
+void keyPressed() {
+    if (key == ' ') {
+        if (!rat.isFalling) { // in order to prevent multiple jumps, rat can only jump if it is not falling
+            rat.isJumping = true;
+        }
     }
 }
 
@@ -159,12 +160,13 @@ void draw() {
 
 public class Rat {
     private float x, y, xchange, ychange;
+    private boolean isJumping, isFalling;
 
     public Rat() {
-        // this.x = 200;
-        // this.y = 400;
-        this.xchange = 2;
-        this.ychange = 2;
+        this.xchange = 0;
+        this.ychange = 0;
+        this.isJumping = false;
+        this.isFalling = false;
     }
 
     public void draw() {
@@ -172,7 +174,7 @@ public class Rat {
         strokeWeight(1);
         // rat tail
         fill(#6D7B8D);
-        triangle(115, 373, 115, 380, 40, 377);
+        triangle(115+xchange, 373+ychange, 115+xchange, 380+ychange, 40+xchange, 377+ychange);
         // rat body
         ellipse(150+xchange, 380+ychange, 100, 55);
         // rat head
@@ -190,8 +192,36 @@ public class Rat {
         ellipse(180+xchange, 405+ychange, 20, 10);
     }
 
-    public void setYchange(float ychange) {
-        this.ychange = ychange;
+    public void run() {
+        this.jumping();
+        this.falling();
+        this.jumpPeak();
+        this.jumpEnd();
+    }
+
+    public void jumping() {
+        if(isJumping) {
+            this.ychange -= 2;
+        }
+    }
+
+    public void falling() {
+        if(isFalling) {
+            this.ychange += 1;
+        }
+    }
+
+    public void jumpPeak() {
+        if (this.ychange == -90) {
+            this.isJumping = false;
+            this.isFalling = true;
+        }
+    }
+
+    public void jumpEnd() {
+        if (this.ychange == 0) {
+            this.isFalling = false;
+        }
     }
 }
 //object to create the holes
@@ -234,9 +264,10 @@ public class Hole{
     ellipse(this.holeXPos - hole_x, this.holeYPos + 5, this.holeWidth-4, this.holeHeight - 9);
   }
   
-  public void getX(){
+  public int getX(){
     stroke(#000000);
     text(""+newX, 200, 350, 400, 400);
+    return this.newX;
   }
 }
 
