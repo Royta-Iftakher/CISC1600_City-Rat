@@ -2,10 +2,9 @@
 // Huda Ayaz & Royta Iftakher (Group #21)
 // CISC 1600
 
-int state = 0;
+int state = 0, counter = 0;
 float building_x = 0;
 Rat rat = new Rat();
-boolean blinkM;
 //float hole_x = 0;
 Hole hole = new Hole();
 
@@ -24,9 +23,11 @@ void setup() {
 // Draw function
 void draw() {
     if (state == 0) {
+        counter = 0; //sets counter to 0 at the start of the game
         startScreen();
     } else if (state == 1) {
         drawCity();
+        drawCounter();
         rat.draw();
         rat.run();
         hole.draw();
@@ -101,10 +102,11 @@ void keyPressed() {
       building_x = 0;
     }
  
-    stroke(#131862); // A color for the lines: medium navy
-    strokeWeight(2); // The thickness of the lines
+    stroke(#131862);
+    strokeWeight(2);
     fill(#546bab); // the color for the rectangles: light navy
     
+    //various buildings
     rect(0-building_x,350,80,-250);
     drawWindows(3,10);
     
@@ -229,6 +231,7 @@ public class Hole{
   private int hole_x = 0;
   private int holeXPos, holeYPos, holeWidth, holeHeight, newX;
   private int holeColor;
+  private int counter = 0;
   
   public Hole(){
     this.holeXPos = 900;
@@ -247,12 +250,13 @@ public class Hole{
     this.holeColor = hColor;
     newX = xPos;
   }
-  
+  //draws the hole object
   public void draw(){
     hole_x = hole_x + 3;
     if (hole_x > 1000){
       hole_x = 0;
       newX = 900;
+      this.counter++;
     }
     
     stroke(#555668);
@@ -264,12 +268,24 @@ public class Hole{
     ellipse(this.holeXPos - hole_x, this.holeYPos + 5, this.holeWidth-4, this.holeHeight - 9);
   }
   
+  
   public int getX(){
-    stroke(#000000);
-    text(""+newX, 200, 350, 400, 400);
+    //stroke(#000000);
+    //text(""+newX, 200, 350, 400, 400);
     return this.newX;
   }
+
+  public int getCount(){
+    return this.counter;
+  }
 }
+
+//this displays the score text on the top left corner of the screen
+  void drawCounter(){
+    stroke(#FFFFFF);
+    textSize(36);
+    text("Score: "+ hole.getCount(), 70, 40);
+  }
 
 //draws a bunch of stars in the night sky
   void stars(){
