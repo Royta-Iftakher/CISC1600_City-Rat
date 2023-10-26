@@ -4,6 +4,7 @@
 
 int state = 0;
 float building_x = 0;
+Rat rat = new Rat();
 
 void setup() {
     size(800, 500);
@@ -16,7 +17,14 @@ void draw() {
         startScreen();
     } else if (state == 1) {
         drawCity();
-        //drawRat();
+        rat.draw();
+        // rat is stationary, city in background will be moving. if space is pressed, rat will jump
+        if (keyPressed == true) {
+            if (key == ' ') {
+                rat.setYchange(-2);
+                rat.setYchange(2);
+            }
+        }
     } else if (state == 2) { // Game over screen if rat dies
         //gameOver();
     } else if (state == 3) { // Win screen if rat reaches the cheese
@@ -48,6 +56,7 @@ void draw() {
     if (mousePressed == true) {
         if (mouseX >= 335 && mouseX <= 455 && mouseY >= 390 && mouseY <= 440) {
             state = 1;
+            draw();
         }
     }
  }
@@ -76,4 +85,41 @@ void draw() {
     rect(960-building_x,350,80,-250);
 }
 
-// new 
+
+public class Rat {
+    private float x, y, xchange, ychange;
+
+    public Rat() {
+        // this.x = 200;
+        // this.y = 400;
+        this.xchange = 2;
+        this.ychange = 2;
+    }
+
+    public void draw() {
+        stroke(#000000);
+        strokeWeight(1);
+        // rat tail
+        fill(#6D7B8D);
+        triangle(115, 373, 115, 380, 40, 377);
+        // rat body
+        ellipse(150+xchange, 380+ychange, 100, 55);
+        // rat head
+        fill(#6D7B8D);
+        triangle(180+xchange, 350+ychange, 180+xchange, 400+ychange, 240+xchange, 375+ychange);
+        // rat eye
+        fill(#000000);
+        circle(195+xchange, 370+ychange, 5);
+        // rat nose
+        fill(#ffc0cb);
+        circle(234+xchange, 375+ychange, 9);
+        // rat feet
+        fill(#6D7B8D);
+        ellipse(125+xchange, 405+ychange, 20, 10);
+        ellipse(180+xchange, 405+ychange, 20, 10);
+    }
+
+    public void setYchange(float ychange) {
+        this.ychange = ychange;
+    }
+}
