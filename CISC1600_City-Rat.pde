@@ -27,15 +27,14 @@ void draw() {
         startScreen();
     } else if (state == 1) {
         drawCity();
+        hole.draw();
         drawCounter();
         rat.draw();
         rat.run();
-        hole.draw();
+        hole.isCollided(rat);
         hole.getX();
     } else if (state == 2) { // Game over screen if rat dies
-        //gameOver();
-    } else if (state == 3) { // Win screen if rat reaches the cheese
-        //winScreen();
+        gameOver();
     }
 }
 
@@ -58,7 +57,7 @@ void keyPressed() {
 
     // Description
     textSize(20);
-    text("On a cold dark night in New York City, a city rat traverses the imposing landscape on the hunt for a morsel of food to quench its hunger. The journey is not easy: it runs into large sewer holes, death traps that threaten its very life, but with your help in avoiding these obstacles, it'll be able to get to his food and survive the night.", 200, 150, 400, 400);
+    text("On a cold dark night in New York City, a city rat traverses the imposing landscape on the hunt for a morsel of food to quench its hunger. The journey is not easy: it runs into large sewer holes, death traps that threaten its very life, but with your help in avoiding these obstacles, it'll be able to survive the night.", 200, 150, 400, 400);
     text("To jump over a hole, hit SPACE. Enjoy :)", 200, 350, 400, 400);
 
     // Start button
@@ -72,10 +71,41 @@ void keyPressed() {
     if (mousePressed == true) {
         if (mouseX >= 335 && mouseX <= 455 && mouseY >= 390 && mouseY <= 440) {
             state = 1;
-            draw();
         }
     }
  }
+
+// Game over screen
+void gameOver() {
+    textAlign(CENTER);
+    background(#131862);
+
+    // fill(#ffec9c);
+    // rect(200, 100, 400, 150);
+    textSize(55);
+    strokeWeight(4);
+    fill(#ff0000);
+    text("GAME OVER", 400, 250);
+    textSize(30);
+    fill(#FFFFFF);
+    text("Score: " + hole.getCount(), 400, 300);
+
+    // Try Again button
+    fill(#000000);
+    rect(335, 390, 120, 50);
+    textSize(20);
+    fill(#FFFFFF);
+    text("TRY AGAIN", 395, 420);
+
+    // Change screen state if Try Again is clicked
+    if (mousePressed == true) {
+        if (mouseX >= 335 && mouseX <= 455 && mouseY >= 390 && mouseY <= 440) {
+            hole.hole_x = 0;
+            hole.newX = 900;
+            state = 1;
+        }
+    }
+}
 
  void drawCity(){
     background(#131862);
@@ -163,12 +193,15 @@ void keyPressed() {
 public class Rat {
     private float x, y, xchange, ychange;
     private boolean isJumping, isFalling;
+    private float ratLeft, ratRight, ratTop, ratBottom;
 
     public Rat() {
-        this.xchange = 0;
         this.ychange = 0;
         this.isJumping = false;
         this.isFalling = false;
+        this.ratLeft = 125; //115
+        this.ratRight = 120; //237
+        this.ratBottom = 100+ychange; // 410
     }
 
     public void draw() {
@@ -176,22 +209,24 @@ public class Rat {
         strokeWeight(1);
         // rat tail
         fill(#6D7B8D);
-        triangle(115+xchange, 373+ychange, 115+xchange, 380+ychange, 40+xchange, 377+ychange);
+        triangle(115, 373+ychange, 115, 380+ychange, 40, 377+ychange);
         // rat body
-        ellipse(150+xchange, 380+ychange, 100, 55);
+        ellipse(150, 380+ychange, 100, 55);
         // rat head
         fill(#6D7B8D);
-        triangle(180+xchange, 350+ychange, 180+xchange, 400+ychange, 240+xchange, 375+ychange);
+        triangle(180, 350+ychange, 180, 400+ychange, 240, 375+ychange);
         // rat eye
         fill(#000000);
-        circle(195+xchange, 370+ychange, 5);
+        circle(195, 370+ychange, 5);
         // rat nose
         fill(#ffc0cb);
-        circle(234+xchange, 375+ychange, 9);
+        circle(234, 375+ychange, 9);
         // rat feet
         fill(#6D7B8D);
-        ellipse(125+xchange, 405+ychange, 20, 10);
-        ellipse(180+xchange, 405+ychange, 20, 10);
+        ellipse(125, 405+ychange, 20, 10);
+        ellipse(180, 405+ychange, 20, 10);
+
+        this.ratBottom = 410+ychange;
     }
 
     public void run() {
@@ -214,7 +249,7 @@ public class Rat {
     }
 
     public void jumpPeak() {
-        if (this.ychange == -90) {
+        if (this.ychange == -100) {
             this.isJumping = false;
             this.isFalling = true;
         }
@@ -231,6 +266,7 @@ public class Hole{
   private int hole_x = 0;
   private int holeXPos, holeYPos, holeWidth, holeHeight, newX;
   private int holeColor;
+  private int holeLeft, holeRight, holeTop, holeBottom;
   private int counter = 0;
   
   public Hole(){
@@ -240,6 +276,11 @@ public class Hole{
     this.holeHeight = 80;
     this.holeColor = #87889c;
     newX = this.holeXPos;
+
+    this.holeLeft = this.newX - this.holeWidth/2 ;
+    this.holeRight = this.newX + this.holeWidth/2;
+    this.holeTop = this.holeYPos - this.holeHeight/2;
+    this.holeBottom = this.holeYPos + this.holeHeight/2;
   }
   
   public Hole(int xPos, int yPos, int hWidth, int hHeight, int hColor){
@@ -248,11 +289,22 @@ public class Hole{
     this.holeWidth = hWidth;
     this.holeHeight = hHeight;
     this.holeColor = hColor;
+
+    this.holeLeft = this.newX - this.holeWidth/2;
+    this.holeRight = this.newX + this.holeWidth/2;
+    this.holeTop = this.holeYPos - this.holeHeight/2;
+    this.holeBottom = this.holeYPos + this.holeHeight/2;
     newX = xPos;
   }
   //draws the hole object
   public void draw(){
     hole_x = hole_x + 3;
+
+    this.holeLeft = this.newX - this.holeWidth/2;
+    this.holeRight = this.newX + this.holeWidth/2;
+    this.holeTop = this.holeYPos - this.holeHeight/2;
+    this.holeBottom = this.holeYPos + this.holeHeight/2;
+
     if (hole_x > 1000){
       hole_x = 0;
       newX = 900;
@@ -275,105 +327,113 @@ public class Hole{
     return this.newX;
   }
 
+  // if rat collides with hole, game over
+  public void isCollided(Rat rat) {
+    if (rat.ratRight >= this.holeLeft && rat.ratLeft <= this.holeRight && rat.ratBottom >= this.holeTop && rat.ratBottom <= this.holeBottom) {
+        state = 2;
+    }
+  }
+
   public int getCount(){
     return this.counter;
   }
 }
 
 //this displays the score text on the top left corner of the screen
-  void drawCounter(){
+void drawCounter(){
     stroke(#FFFFFF);
     textSize(36);
+    fill(#ffec9c);
     text("Score: "+ hole.getCount(), 70, 40);
-  }
+}
 
 //draws a bunch of stars in the night sky
-  void stars(){
-      for (int i = 100; i < numStars; i += random(1,10)) {
-        fill(#ffec9c);
-        ellipse(random(width), random(height), 4, 4);
-      }
-  }
+void stars(){
+    for (int i = 100; i < numStars; i += random(1,10)) {
+    fill(#ffec9c);
+    ellipse(random(width), random(height), 4, 4);
+    }
+}
   
- //helps draw all those windows 
-  void drawWindows(int buildingHeight, int xStart){
+//helps draw all those windows 
+void drawWindows(int buildingHeight, int xStart){
     //windows for tall rectangle xStart = 10
     if(buildingHeight == 3){
-      fill(#e7bb67);
-      rect(xStart-building_x,115,10,20);//1st row
-      rect((xStart+25)-building_x,115,10,20);
-      rect((xStart+50)-building_x,115,10,20);
-    
-      rect(xStart-building_x,145,10,20);//2nd row
-      rect((xStart+25)-building_x,145,10,20);
-      rect((xStart+50)-building_x,145,10,20);
-    
-      rect(xStart-building_x,175,10,20);//3rd row
-      rect((xStart+25)-building_x,175,10,20);
-      rect((xStart+50)-building_x,175,10,20);
-    
-      rect(xStart-building_x,205,10,20);//4th row
-      rect((xStart+25)-building_x,205,10,20);
-      rect((xStart+50)-building_x,205,10,20);
-    
-      rect(xStart-building_x,235,10,20);//5th row
-      rect((xStart+25)-building_x,235,10,20);
-      rect((xStart+50)-building_x,235,10,20);
-    
-      rect(xStart-building_x,265,10,20);//6th row
-      rect((xStart+25)-building_x,265,10,20);
-      rect((xStart+50)-building_x,265,10,20);
-    
-      rect(xStart-building_x,295,10,20);//7th row
-      rect((xStart+25)-building_x,295,10,20);
-      rect((xStart+50)-building_x,295,10,20);
-    
-      rect(xStart-building_x,325,10,15);//8th row
-      rect((xStart+25)-building_x,325,10,15);
-      rect((xStart+50)-building_x,325,10,15);
+        fill(#e7bb67);
+        rect(xStart-building_x,115,10,20);//1st row
+        rect((xStart+25)-building_x,115,10,20);
+        rect((xStart+50)-building_x,115,10,20);
+
+        rect(xStart-building_x,145,10,20);//2nd row
+        rect((xStart+25)-building_x,145,10,20);
+        rect((xStart+50)-building_x,145,10,20);
+
+        rect(xStart-building_x,175,10,20);//3rd row
+        rect((xStart+25)-building_x,175,10,20);
+        rect((xStart+50)-building_x,175,10,20);
+
+        rect(xStart-building_x,205,10,20);//4th row
+        rect((xStart+25)-building_x,205,10,20);
+        rect((xStart+50)-building_x,205,10,20);
+
+        rect(xStart-building_x,235,10,20);//5th row
+        rect((xStart+25)-building_x,235,10,20);
+        rect((xStart+50)-building_x,235,10,20);
+
+        rect(xStart-building_x,265,10,20);//6th row
+        rect((xStart+25)-building_x,265,10,20);
+        rect((xStart+50)-building_x,265,10,20);
+
+        rect(xStart-building_x,295,10,20);//7th row
+        rect((xStart+25)-building_x,295,10,20);
+        rect((xStart+50)-building_x,295,10,20);
+
+        rect(xStart-building_x,325,10,15);//8th row
+        rect((xStart+25)-building_x,325,10,15);
+        rect((xStart+50)-building_x,325,10,15);
 
     } else if (buildingHeight == 2){
-      //windows for medium rectangle
-      fill(#e7bb67);
-     
-      rect(xStart-building_x,185,10,10);//1sd row
-      rect((xStart+25)-building_x,185,10,10);
-      rect((xStart+50)-building_x,185,10,10);
-    
-      rect(xStart-building_x,205,10,20);//2nd row
-      rect((xStart+25)-building_x,205,10,20);
-      rect((xStart+50)-building_x,205,10,20);
-    
-      rect(xStart-building_x,235,10,20);//3rd row
-      rect((xStart+25)-building_x,235,10,20);
-      rect((xStart+50)-building_x,235,10,20);
-    
-      rect(xStart-building_x,265,10,20);//4th row
-      rect((xStart+25)-building_x,265,10,20);
-      rect((xStart+50)-building_x,265,10,20);
-    
-      rect(xStart-building_x,295,10,20);//5th row
-      rect((xStart+25)-building_x,295,10,20);
-      rect((xStart+50)-building_x,295,10,20);
-    
-      rect(xStart-building_x,325,10,15);//6th row
-      rect((xStart+25)-building_x,325,10,15);
-      rect((xStart+50)-building_x,325,10,15);
+        //windows for medium rectangle
+        fill(#e7bb67);
+        
+        rect(xStart-building_x,185,10,10);//1sd row
+        rect((xStart+25)-building_x,185,10,10);
+        rect((xStart+50)-building_x,185,10,10);
+
+        rect(xStart-building_x,205,10,20);//2nd row
+        rect((xStart+25)-building_x,205,10,20);
+        rect((xStart+50)-building_x,205,10,20);
+
+        rect(xStart-building_x,235,10,20);//3rd row
+        rect((xStart+25)-building_x,235,10,20);
+        rect((xStart+50)-building_x,235,10,20);
+
+        rect(xStart-building_x,265,10,20);//4th row
+        rect((xStart+25)-building_x,265,10,20);
+        rect((xStart+50)-building_x,265,10,20);
+
+        rect(xStart-building_x,295,10,20);//5th row
+        rect((xStart+25)-building_x,295,10,20);
+        rect((xStart+50)-building_x,295,10,20);
+
+        rect(xStart-building_x,325,10,15);//6th row
+        rect((xStart+25)-building_x,325,10,15);
+        rect((xStart+50)-building_x,325,10,15);
 
     } else if (buildingHeight == 1){
-      //windows for small rectangle
-      fill(#e7bb67);
-    
-      rect(xStart-building_x,265,10,20);//1st row
-      rect((xStart+25)-building_x,265,10,20);
-      rect((xStart+50)-building_x,265,10,20);
-    
-      rect(xStart-building_x,295,10,20);//2nd row
-      rect((xStart+25)-building_x,295,10,20);
-      rect((xStart+50)-building_x,295,10,20);
-    
-      rect(xStart-building_x,325,10,15);//3rd row
-      rect((xStart+25)-building_x,325,10,15);
-      rect((xStart+50)-building_x,325,10,15);
+        //windows for small rectangle
+        fill(#e7bb67);
+
+        rect(xStart-building_x,265,10,20);//1st row
+        rect((xStart+25)-building_x,265,10,20);
+        rect((xStart+50)-building_x,265,10,20);
+
+        rect(xStart-building_x,295,10,20);//2nd row
+        rect((xStart+25)-building_x,295,10,20);
+        rect((xStart+50)-building_x,295,10,20);
+
+        rect(xStart-building_x,325,10,15);//3rd row
+        rect((xStart+25)-building_x,325,10,15);
+        rect((xStart+50)-building_x,325,10,15);
     }
-  }
+}
