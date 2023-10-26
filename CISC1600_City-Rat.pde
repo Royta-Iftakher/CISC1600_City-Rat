@@ -2,10 +2,9 @@
 // Huda Ayaz & Royta Iftakher (Group #21)
 // CISC 1600
 
-int state = 0;
+int state = 0, counter = 0;
 float building_x = 0;
 Rat rat = new Rat();
-boolean blinkM;
 //float hole_x = 0;
 Hole hole = new Hole();
 
@@ -24,10 +23,12 @@ void setup() {
 // Draw function
 void draw() {
     if (state == 0) {
+        counter = 0; //sets counter to 0 at the start of the game
         startScreen();
     } else if (state == 1) {
         drawCity();
         hole.draw();
+        drawCounter();
         rat.draw();
         rat.run();
         hole.isCollided(rat);
@@ -79,10 +80,15 @@ void gameOver() {
     textAlign(CENTER);
     background(#131862);
 
+    // fill(#ffec9c);
+    // rect(200, 100, 400, 150);
     textSize(55);
     strokeWeight(4);
     fill(#ff0000);
     text("GAME OVER", 400, 250);
+    textSize(30);
+    fill(#FFFFFF);
+    text("Score: " + hole.getCount(), 400, 300);
 
     // Try Again button
     fill(#000000);
@@ -126,10 +132,11 @@ void gameOver() {
       building_x = 0;
     }
  
-    stroke(#131862); // A color for the lines: medium navy
-    strokeWeight(2); // The thickness of the lines
+    stroke(#131862);
+    strokeWeight(2);
     fill(#546bab); // the color for the rectangles: light navy
     
+    //various buildings
     rect(0-building_x,350,80,-250);
     drawWindows(3,10);
     
@@ -242,7 +249,7 @@ public class Rat {
     }
 
     public void jumpPeak() {
-        if (this.ychange == -90) {
+        if (this.ychange == -100) {
             this.isJumping = false;
             this.isFalling = true;
         }
@@ -260,6 +267,7 @@ public class Hole{
   private int holeXPos, holeYPos, holeWidth, holeHeight, newX;
   private int holeColor;
   private int holeLeft, holeRight, holeTop, holeBottom;
+  private int counter = 0;
   
   public Hole(){
     this.holeXPos = 900;
@@ -288,7 +296,7 @@ public class Hole{
     this.holeBottom = this.holeYPos + this.holeHeight/2;
     newX = xPos;
   }
-  
+  //draws the hole object
   public void draw(){
     hole_x = hole_x + 3;
 
@@ -300,6 +308,7 @@ public class Hole{
     if (hole_x > 1000){
       hole_x = 0;
       newX = 900;
+      this.counter++;
     }
     
     stroke(#555668);
@@ -311,9 +320,10 @@ public class Hole{
     ellipse(this.holeXPos - hole_x, this.holeYPos + 5, this.holeWidth-4, this.holeHeight - 9);
   }
   
+  
   public int getX(){
-    stroke(#000000);
-    text(""+newX, 200, 350, 400, 400);
+    //stroke(#000000);
+    //text(""+newX, 200, 350, 400, 400);
     return this.newX;
   }
 
@@ -323,95 +333,107 @@ public class Hole{
         state = 2;
     }
   }
+
+  public int getCount(){
+    return this.counter;
+  }
+}
+
+//this displays the score text on the top left corner of the screen
+void drawCounter(){
+    stroke(#FFFFFF);
+    textSize(36);
+    fill(#ffec9c);
+    text("Score: "+ hole.getCount(), 70, 40);
 }
 
 //draws a bunch of stars in the night sky
-  void stars(){
-      for (int i = 100; i < numStars; i += random(1,10)) {
-        fill(#ffec9c);
-        ellipse(random(width), random(height), 4, 4);
-      }
-  }
+void stars(){
+    for (int i = 100; i < numStars; i += random(1,10)) {
+    fill(#ffec9c);
+    ellipse(random(width), random(height), 4, 4);
+    }
+}
   
- //helps draw all those windows 
-  void drawWindows(int buildingHeight, int xStart){
+//helps draw all those windows 
+void drawWindows(int buildingHeight, int xStart){
     //windows for tall rectangle xStart = 10
     if(buildingHeight == 3){
-      fill(#e7bb67);
-      rect(xStart-building_x,115,10,20);//1st row
-      rect((xStart+25)-building_x,115,10,20);
-      rect((xStart+50)-building_x,115,10,20);
-    
-      rect(xStart-building_x,145,10,20);//2nd row
-      rect((xStart+25)-building_x,145,10,20);
-      rect((xStart+50)-building_x,145,10,20);
-    
-      rect(xStart-building_x,175,10,20);//3rd row
-      rect((xStart+25)-building_x,175,10,20);
-      rect((xStart+50)-building_x,175,10,20);
-    
-      rect(xStart-building_x,205,10,20);//4th row
-      rect((xStart+25)-building_x,205,10,20);
-      rect((xStart+50)-building_x,205,10,20);
-    
-      rect(xStart-building_x,235,10,20);//5th row
-      rect((xStart+25)-building_x,235,10,20);
-      rect((xStart+50)-building_x,235,10,20);
-    
-      rect(xStart-building_x,265,10,20);//6th row
-      rect((xStart+25)-building_x,265,10,20);
-      rect((xStart+50)-building_x,265,10,20);
-    
-      rect(xStart-building_x,295,10,20);//7th row
-      rect((xStart+25)-building_x,295,10,20);
-      rect((xStart+50)-building_x,295,10,20);
-    
-      rect(xStart-building_x,325,10,15);//8th row
-      rect((xStart+25)-building_x,325,10,15);
-      rect((xStart+50)-building_x,325,10,15);
+        fill(#e7bb67);
+        rect(xStart-building_x,115,10,20);//1st row
+        rect((xStart+25)-building_x,115,10,20);
+        rect((xStart+50)-building_x,115,10,20);
+
+        rect(xStart-building_x,145,10,20);//2nd row
+        rect((xStart+25)-building_x,145,10,20);
+        rect((xStart+50)-building_x,145,10,20);
+
+        rect(xStart-building_x,175,10,20);//3rd row
+        rect((xStart+25)-building_x,175,10,20);
+        rect((xStart+50)-building_x,175,10,20);
+
+        rect(xStart-building_x,205,10,20);//4th row
+        rect((xStart+25)-building_x,205,10,20);
+        rect((xStart+50)-building_x,205,10,20);
+
+        rect(xStart-building_x,235,10,20);//5th row
+        rect((xStart+25)-building_x,235,10,20);
+        rect((xStart+50)-building_x,235,10,20);
+
+        rect(xStart-building_x,265,10,20);//6th row
+        rect((xStart+25)-building_x,265,10,20);
+        rect((xStart+50)-building_x,265,10,20);
+
+        rect(xStart-building_x,295,10,20);//7th row
+        rect((xStart+25)-building_x,295,10,20);
+        rect((xStart+50)-building_x,295,10,20);
+
+        rect(xStart-building_x,325,10,15);//8th row
+        rect((xStart+25)-building_x,325,10,15);
+        rect((xStart+50)-building_x,325,10,15);
 
     } else if (buildingHeight == 2){
-      //windows for medium rectangle
-      fill(#e7bb67);
-     
-      rect(xStart-building_x,185,10,10);//1sd row
-      rect((xStart+25)-building_x,185,10,10);
-      rect((xStart+50)-building_x,185,10,10);
-    
-      rect(xStart-building_x,205,10,20);//2nd row
-      rect((xStart+25)-building_x,205,10,20);
-      rect((xStart+50)-building_x,205,10,20);
-    
-      rect(xStart-building_x,235,10,20);//3rd row
-      rect((xStart+25)-building_x,235,10,20);
-      rect((xStart+50)-building_x,235,10,20);
-    
-      rect(xStart-building_x,265,10,20);//4th row
-      rect((xStart+25)-building_x,265,10,20);
-      rect((xStart+50)-building_x,265,10,20);
-    
-      rect(xStart-building_x,295,10,20);//5th row
-      rect((xStart+25)-building_x,295,10,20);
-      rect((xStart+50)-building_x,295,10,20);
-    
-      rect(xStart-building_x,325,10,15);//6th row
-      rect((xStart+25)-building_x,325,10,15);
-      rect((xStart+50)-building_x,325,10,15);
+        //windows for medium rectangle
+        fill(#e7bb67);
+        
+        rect(xStart-building_x,185,10,10);//1sd row
+        rect((xStart+25)-building_x,185,10,10);
+        rect((xStart+50)-building_x,185,10,10);
+
+        rect(xStart-building_x,205,10,20);//2nd row
+        rect((xStart+25)-building_x,205,10,20);
+        rect((xStart+50)-building_x,205,10,20);
+
+        rect(xStart-building_x,235,10,20);//3rd row
+        rect((xStart+25)-building_x,235,10,20);
+        rect((xStart+50)-building_x,235,10,20);
+
+        rect(xStart-building_x,265,10,20);//4th row
+        rect((xStart+25)-building_x,265,10,20);
+        rect((xStart+50)-building_x,265,10,20);
+
+        rect(xStart-building_x,295,10,20);//5th row
+        rect((xStart+25)-building_x,295,10,20);
+        rect((xStart+50)-building_x,295,10,20);
+
+        rect(xStart-building_x,325,10,15);//6th row
+        rect((xStart+25)-building_x,325,10,15);
+        rect((xStart+50)-building_x,325,10,15);
 
     } else if (buildingHeight == 1){
-      //windows for small rectangle
-      fill(#e7bb67);
-    
-      rect(xStart-building_x,265,10,20);//1st row
-      rect((xStart+25)-building_x,265,10,20);
-      rect((xStart+50)-building_x,265,10,20);
-    
-      rect(xStart-building_x,295,10,20);//2nd row
-      rect((xStart+25)-building_x,295,10,20);
-      rect((xStart+50)-building_x,295,10,20);
-    
-      rect(xStart-building_x,325,10,15);//3rd row
-      rect((xStart+25)-building_x,325,10,15);
-      rect((xStart+50)-building_x,325,10,15);
+        //windows for small rectangle
+        fill(#e7bb67);
+
+        rect(xStart-building_x,265,10,20);//1st row
+        rect((xStart+25)-building_x,265,10,20);
+        rect((xStart+50)-building_x,265,10,20);
+
+        rect(xStart-building_x,295,10,20);//2nd row
+        rect((xStart+25)-building_x,295,10,20);
+        rect((xStart+50)-building_x,295,10,20);
+
+        rect(xStart-building_x,325,10,15);//3rd row
+        rect((xStart+25)-building_x,325,10,15);
+        rect((xStart+50)-building_x,325,10,15);
     }
-  }
+}
