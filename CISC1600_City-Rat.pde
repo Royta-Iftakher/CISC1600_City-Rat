@@ -4,6 +4,7 @@
 
 int state = 0;
 float building_x = 0;
+Rat rat = new Rat();
 boolean blinkM;
 //float hole_x = 0;
 Hole hole = new Hole();
@@ -27,6 +28,14 @@ void draw() {
     } else if (state == 1) {
         //drawGround();
         drawCity();
+        rat.draw();
+        // rat is stationary, city in background will be moving. if space is pressed, rat will jump
+        if (keyPressed == true) {
+            if (key == ' ') {
+                rat.setYchange(-2);
+                rat.setYchange(2);
+            }
+        }
         hole.draw();
         hole.getX();
         //drawRat();
@@ -61,6 +70,7 @@ void draw() {
     if (mousePressed == true) {
         if (mouseX >= 335 && mouseX <= 455 && mouseY >= 390 && mouseY <= 440) {
             state = 1;
+            draw();
         }
     }
  }
@@ -85,7 +95,7 @@ void draw() {
     //draw the moving buildings
     fill(#3f3f4c);
     rect(0,350, 800, 300);
-    building_x = building_x + 1;
+    building_x = building_x + 3;
     if (building_x > 240){
       building_x = 0;
     }
@@ -146,6 +156,44 @@ void draw() {
     drawWindows(3,970);
 }
 
+
+public class Rat {
+    private float x, y, xchange, ychange;
+
+    public Rat() {
+        // this.x = 200;
+        // this.y = 400;
+        this.xchange = 2;
+        this.ychange = 2;
+    }
+
+    public void draw() {
+        stroke(#000000);
+        strokeWeight(1);
+        // rat tail
+        fill(#6D7B8D);
+        triangle(115, 373, 115, 380, 40, 377);
+        // rat body
+        ellipse(150+xchange, 380+ychange, 100, 55);
+        // rat head
+        fill(#6D7B8D);
+        triangle(180+xchange, 350+ychange, 180+xchange, 400+ychange, 240+xchange, 375+ychange);
+        // rat eye
+        fill(#000000);
+        circle(195+xchange, 370+ychange, 5);
+        // rat nose
+        fill(#ffc0cb);
+        circle(234+xchange, 375+ychange, 9);
+        // rat feet
+        fill(#6D7B8D);
+        ellipse(125+xchange, 405+ychange, 20, 10);
+        ellipse(180+xchange, 405+ychange, 20, 10);
+    }
+
+    public void setYchange(float ychange) {
+        this.ychange = ychange;
+    }
+}
 //object to create the holes
 public class Hole{
   private int hole_x = 0;
@@ -171,7 +219,7 @@ public class Hole{
   }
   
   public void draw(){
-    hole_x = hole_x + 1;
+    hole_x = hole_x + 3;
     if (hole_x > 1000){
       hole_x = 0;
       newX = 900;
@@ -282,4 +330,3 @@ public class Hole{
       rect((xStart+50)-building_x,325,10,15);
     }
   }
-  
