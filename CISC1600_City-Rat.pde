@@ -27,12 +27,13 @@ void draw() {
         startScreen();
     } else if (state == 1) {
         drawCity();
+        hole.draw();
         rat.draw();
         rat.run();
-        hole.draw();
+        hole.isCollided(rat);
         hole.getX();
     } else if (state == 2) { // Game over screen if rat dies
-        //gameOver();
+        gameOver();
     } else if (state == 3) { // Win screen if rat reaches the cheese
         //winScreen();
     }
@@ -71,10 +72,36 @@ void keyPressed() {
     if (mousePressed == true) {
         if (mouseX >= 335 && mouseX <= 455 && mouseY >= 390 && mouseY <= 440) {
             state = 1;
-            draw();
         }
     }
  }
+
+// Game over screen
+void gameOver() {
+    textAlign(CENTER);
+    background(#131862);
+
+    textSize(55);
+    strokeWeight(4);
+    fill(#ff0000);
+    text("GAME OVER", 400, 250);
+
+    // Try Again button
+    fill(#000000);
+    rect(335, 390, 120, 50);
+    textSize(20);
+    fill(#FFFFFF);
+    text("TRY AGAIN", 395, 420);
+
+    // Change screen state if Try Again is clicked
+    if (mousePressed == true) {
+        if (mouseX >= 335 && mouseX <= 455 && mouseY >= 390 && mouseY <= 440) {
+            hole.hole_x = 0;
+            hole.newX = 900;
+            state = 1;
+        }
+    }
+}
 
  void drawCity(){
     background(#131862);
@@ -161,12 +188,15 @@ void keyPressed() {
 public class Rat {
     private float x, y, xchange, ychange;
     private boolean isJumping, isFalling;
+    private float ratLeft, ratRight, ratTop, ratBottom;
 
     public Rat() {
-        this.xchange = 0;
         this.ychange = 0;
         this.isJumping = false;
         this.isFalling = false;
+        this.ratLeft = 125; //115
+        this.ratRight = 120; //237
+        this.ratBottom = 100+ychange; // 410
     }
 
     public void draw() {
@@ -174,22 +204,24 @@ public class Rat {
         strokeWeight(1);
         // rat tail
         fill(#6D7B8D);
-        triangle(115+xchange, 373+ychange, 115+xchange, 380+ychange, 40+xchange, 377+ychange);
+        triangle(115, 373+ychange, 115, 380+ychange, 40, 377+ychange);
         // rat body
-        ellipse(150+xchange, 380+ychange, 100, 55);
+        ellipse(150, 380+ychange, 100, 55);
         // rat head
         fill(#6D7B8D);
-        triangle(180+xchange, 350+ychange, 180+xchange, 400+ychange, 240+xchange, 375+ychange);
+        triangle(180, 350+ychange, 180, 400+ychange, 240, 375+ychange);
         // rat eye
         fill(#000000);
-        circle(195+xchange, 370+ychange, 5);
+        circle(195, 370+ychange, 5);
         // rat nose
         fill(#ffc0cb);
-        circle(234+xchange, 375+ychange, 9);
+        circle(234, 375+ychange, 9);
         // rat feet
         fill(#6D7B8D);
-        ellipse(125+xchange, 405+ychange, 20, 10);
-        ellipse(180+xchange, 405+ychange, 20, 10);
+        ellipse(125, 405+ychange, 20, 10);
+        ellipse(180, 405+ychange, 20, 10);
+
+        this.ratBottom = 410+ychange;
     }
 
     public void run() {
@@ -229,6 +261,7 @@ public class Hole{
   private int hole_x = 0;
   private int holeXPos, holeYPos, holeWidth, holeHeight, newX;
   private int holeColor;
+  private int holeLeft, holeRight, holeTop, holeBottom;
   
   public Hole(){
     this.holeXPos = 900;
@@ -237,6 +270,11 @@ public class Hole{
     this.holeHeight = 80;
     this.holeColor = #87889c;
     newX = this.holeXPos;
+
+    this.holeLeft = this.newX - this.holeWidth/2 ;
+    this.holeRight = this.newX + this.holeWidth/2;
+    this.holeTop = this.holeYPos - this.holeHeight/2;
+    this.holeBottom = this.holeYPos + this.holeHeight/2;
   }
   
   public Hole(int xPos, int yPos, int hWidth, int hHeight, int hColor){
@@ -245,11 +283,22 @@ public class Hole{
     this.holeWidth = hWidth;
     this.holeHeight = hHeight;
     this.holeColor = hColor;
+
+    this.holeLeft = this.newX - this.holeWidth/2;
+    this.holeRight = this.newX + this.holeWidth/2;
+    this.holeTop = this.holeYPos - this.holeHeight/2;
+    this.holeBottom = this.holeYPos + this.holeHeight/2;
     newX = xPos;
   }
   
   public void draw(){
     hole_x = hole_x + 3;
+
+    this.holeLeft = this.newX - this.holeWidth/2;
+    this.holeRight = this.newX + this.holeWidth/2;
+    this.holeTop = this.holeYPos - this.holeHeight/2;
+    this.holeBottom = this.holeYPos + this.holeHeight/2;
+
     if (hole_x > 1000){
       hole_x = 0;
       newX = 900;
@@ -268,6 +317,13 @@ public class Hole{
     stroke(#000000);
     text(""+newX, 200, 350, 400, 400);
     return this.newX;
+  }
+
+  // if rat collides with hole, game over
+  public void isCollided(Rat rat) {
+    if (rat.ratRight >= this.holeLeft && rat.ratLeft <= this.holeRight && rat.ratBottom >= this.holeTop && rat.ratBottom <= this.holeBottom) {
+        state = 2;
+    }
   }
 }
 
