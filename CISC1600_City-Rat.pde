@@ -88,7 +88,7 @@ void gameOver() {
     text("GAME OVER", 400, 250);
     textSize(30);
     fill(#FFFFFF);
-    text("Score: " + hole.getCount(), 400, 300);
+    text("Final Score: " + hole.getCount(), 400, 300);
 
     // Try Again button
     fill(#000000);
