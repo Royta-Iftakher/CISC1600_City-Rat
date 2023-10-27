@@ -102,6 +102,7 @@ void gameOver() {
         if (mouseX >= 335 && mouseX <= 455 && mouseY >= 390 && mouseY <= 440) {
             hole.hole_x = 0;
             hole.newX = 900;
+            hole.counter = 0;
             state = 1;
         }
     }
